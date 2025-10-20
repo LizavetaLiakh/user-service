@@ -93,13 +93,6 @@
                 <groupId>org.liquibase</groupId>
                 <artifactId>liquibase-maven-plugin</artifactId>
                 <version>3.5.3</version>
-                <configuration>
-                    <changeLogFile>src/main/resources/db/changelog/db.changelog-master.xml</changeLogFile>
-                    <url>jdbc:postgresql://127.0.0.1:5432/mydb</url>
-                    <username>root</username>
-                    <password>1111</password>
-                    <driver>org.postgresql.Driver</driver>
-                </configuration>
             </plugin>
 
             <plugin>

@@ -6,8 +6,8 @@
                         https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
     <changeSet id="innowise-microservice" author="Lizaveta Liakh">
-        <sqlFile path="20251018_initial_tables.sql" relativeToChangelogFile="true"/>
-        <sqlFile path="20251018_apply_indexes.sql" relativeToChangelogFile="true"/>
+        <sqlFile path="V1.0/20251018_initial_tables.sql" relativeToChangelogFile="true"/>
+        <sqlFile path="V1.0/20251018_apply_indexes.sql" relativeToChangelogFile="true"/>
     </changeSet>
 
 </databaseChangeLog>
