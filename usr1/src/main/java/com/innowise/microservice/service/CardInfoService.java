@@ -1,13 +1,9 @@
 package com.innowise.microservice.service;
 
 import com.innowise.microservice.dto.CardInfoDto;
-import com.innowise.microservice.dto.UserDto;
 import com.innowise.microservice.entity.CardInfo;
-import com.innowise.microservice.entity.User;
 import com.innowise.microservice.mapper.CardInfoMapper;
-import com.innowise.microservice.mapper.UserMapper;
 import com.innowise.microservice.repository.CardInfoRepository;
-import com.innowise.microservice.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
