@@ -7,6 +7,9 @@ import com.innowise.microservice.exception.CardNumberExistsException;
 import com.innowise.microservice.exception.EmptyCardListException;
 import com.innowise.microservice.mapper.CardInfoMapper;
 import com.innowise.microservice.repository.CardInfoRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,6 +40,7 @@ public class CardInfoService {
      * @param cardDto DTO with new card's data
      * @return created card as DTO
      */
+    @CachePut(value = "CARD_CACHE", key = "#result.id()")
     public CardInfoDto createCard(CardInfoDto cardDto) {
         repository.findByNumber(cardDto.getNumber())
                 .ifPresent(sameNumberCard -> {
@@ -52,6 +56,7 @@ public class CardInfoService {
      * @param id card's unique identifier
      * @return card as DTO if found, empty if not found
      */
+    @Cacheable(value = "CARD_CACHE", key = "#id")
     public CardInfoDto getCardById(Long id) {
         return repository.findById(id)
                 .map(mapper::toCardInfoDto)
@@ -79,8 +84,9 @@ public class CardInfoService {
      * @param id card's unique identifier
      * @param newCardDto CardInfoDto that contains current data
      */
+    @CachePut(value = "CARD_CACHE", key = "#id")
     @Transactional
-    public void updateCardById(Long id, CardInfoDto newCardDto) {
+    public CardInfoDto updateCardById(Long id, CardInfoDto newCardDto) {
         repository.findByNumber(newCardDto.getNumber())
                 .ifPresent(sameNumberCard -> {
                     throw new CardNumberExistsException(newCardDto.getNumber());
@@ -90,12 +96,16 @@ public class CardInfoService {
         if (updated == 0) {
             throw new CardNotFoundException(id);
         }
+        return repository.findById(id)
+                .map(mapper::toCardInfoDto)
+                .orElseThrow(() -> new CardNotFoundException(id));
     }
 
     /**
      * Deletes a card by id.
      * @param id card's id
      */
+    @CacheEvict(value = "CARD_CACHE", key = "#id")
     @Transactional
     public void deleteCardById(Long id) {
         try {

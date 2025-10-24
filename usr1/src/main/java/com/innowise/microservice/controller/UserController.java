@@ -117,9 +117,9 @@ public class UserController {
      * @response 500 Internal Server Error - Unexpected server error occurred.
      */
     @PutMapping("/update/{id}")
-    public ResponseEntity<Void> updateUser(@PathVariable Long id, @RequestBody UserDto userDto) {
-        service.updateUserById(id, userDto);
-        return ResponseEntity.status(HttpStatus.OK).build();
+    public ResponseEntity<UserDto> updateUser(@PathVariable Long id, @RequestBody UserDto userDto) {
+        UserDto updatedUser = service.updateUserById(id, userDto);
+        return ResponseEntity.status(HttpStatus.OK).body(updatedUser);
     }
 
     /**

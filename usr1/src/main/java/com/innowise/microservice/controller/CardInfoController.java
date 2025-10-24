@@ -99,9 +99,9 @@ public class CardInfoController {
      * @response 500 Internal Server Error - Unexpected server error occurred.
      */
     @PutMapping("/update/{id}")
-    public ResponseEntity<Void> updateCard(@PathVariable Long id, @RequestBody CardInfoDto cardInfoDto) {
-        service.updateCardById(id, cardInfoDto);
-        return ResponseEntity.status(HttpStatus.OK).build();
+    public ResponseEntity<CardInfoDto> updateCard(@PathVariable Long id, @RequestBody CardInfoDto cardInfoDto) {
+        CardInfoDto updatedCard = service.updateCardById(id, cardInfoDto);
+        return ResponseEntity.status(HttpStatus.OK).body(updatedCard);
     }
 
     /**
