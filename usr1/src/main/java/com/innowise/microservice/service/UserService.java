@@ -1,6 +1,7 @@
 package com.innowise.microservice.service;
 
-import com.innowise.microservice.dto.UserDto;
+import com.innowise.microservice.dto.UserRequestDto;
+import com.innowise.microservice.dto.UserResponseDto;
 import com.innowise.microservice.entity.User;
 import com.innowise.microservice.exception.EmptyUserListException;
 import com.innowise.microservice.exception.UserEmailExistsException;
@@ -8,7 +9,6 @@ import com.innowise.microservice.exception.UserNotFoundException;
 import com.innowise.microservice.exception.UserWithEmailNotFoundException;
 import com.innowise.microservice.mapper.UserMapper;
 import com.innowise.microservice.repository.UserRepository;
-import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -31,7 +31,7 @@ public class UserService {
     private final UserRepository repository;
     private final UserMapper mapper;
 
-    public UserService(UserRepository repository, UserMapper mapper, CacheManager cacheManager) {
+    public UserService(UserRepository repository, UserMapper mapper) {
         this.repository = repository;
         this.mapper = mapper;
     }
@@ -42,14 +42,14 @@ public class UserService {
      * @return created user as DTO
      */
     @CachePut(value = "USER_CACHE", key = "#result.id()")
-    public UserDto createUser(UserDto userDto) {
+    public UserResponseDto createUser(UserRequestDto userDto) {
         repository.findByEmail(userDto.getEmail())
                 .ifPresent(sameEmailUser -> {
                     throw new UserEmailExistsException(userDto.getEmail());
                 });
         User user = mapper.toUser(userDto);
         User savedUser = repository.save(user);
-        return mapper.toUserDto(savedUser);
+        return mapper.toUserResponseDto(savedUser);
     }
 
     /**
@@ -58,9 +58,9 @@ public class UserService {
      * @return user as DTO if found, empty if not found
      */
     @Cacheable(value = "USER_CACHE", key = "#id")
-    public UserDto getUserById(Long id) {
+    public UserResponseDto getUserById(Long id) {
         return repository.findById(id)
-                .map(mapper::toUserDto)
+                .map(mapper::toUserResponseDto)
                 .orElseThrow(() -> new UserNotFoundException(id));
     }
 
@@ -69,10 +69,10 @@ public class UserService {
      * @param ids list of users' unique identifiers
      * @return list of users as DTOs
      */
-    public List<UserDto> getUsersByIds(Iterable<Long> ids) {
-        List<UserDto> users = repository.findAllById(ids)
+    public List<UserResponseDto> getUsersByIds(Iterable<Long> ids) {
+        List<UserResponseDto> users = repository.findAllById(ids)
                 .stream()
-                .map(mapper::toUserDto)
+                .map(mapper::toUserResponseDto)
                 .toList();
         if (users.isEmpty()) {
             throw new EmptyUserListException(ids);
@@ -86,9 +86,9 @@ public class UserService {
      * @return user as DTO if found, empty if not found
      */
     @Cacheable(value = "USER_EMAIL_CACHE", key = "#email")
-    public UserDto getUserByEmail(String email) {
+    public UserResponseDto getUserByEmail(String email) {
         return repository.findByEmail(email)
-                .map(mapper::toUserDto)
+                .map(mapper::toUserResponseDto)
                 .orElseThrow(() -> new UserWithEmailNotFoundException(email));
     }
 
@@ -99,11 +99,14 @@ public class UserService {
      * @return Updated user.
      */
     @CachePut(value = "USER_CACHE", key = "#id")
+    @CacheEvict(value = "USER_EMAIL_CACHE", allEntries = true)
     @Transactional
-    public UserDto updateUserById(Long id, UserDto newUserDto) {
+    public UserResponseDto updateUserById(Long id, UserRequestDto newUserDto) {
         repository.findByEmail(newUserDto.getEmail())
                 .ifPresent(sameEmailUser -> {
-                    throw new UserEmailExistsException(newUserDto.getEmail());
+                    if (!sameEmailUser.getId().equals(id)) {
+                        throw new UserEmailExistsException(newUserDto.getEmail());
+                    }
                 });
         int updated = repository.updateUser(id, newUserDto.getName(), newUserDto.getSurname(),
                 newUserDto.getBirthDate(), newUserDto.getEmail());
@@ -111,7 +114,7 @@ public class UserService {
             throw new UserNotFoundException(id);
         }
         return repository.findById(id)
-                .map(mapper::toUserDto)
+                .map(mapper::toUserResponseDto)
                 .orElseThrow(() -> new UserNotFoundException(id));
     }
 
@@ -119,7 +122,7 @@ public class UserService {
      * Deletes a user by id.
      * @param id user's id
      */
-    @CacheEvict(value = "USER_CACHE", key = "#id")
+    @CacheEvict(value = {"USER_CACHE", "USER_EMAIL_CACHE"}, key = "#id", allEntries = true)
     @Transactional
     public void deleteUserById(Long id) {
         try {

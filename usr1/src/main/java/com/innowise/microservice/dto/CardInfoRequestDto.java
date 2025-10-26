@@ -5,20 +5,14 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
+
 import java.time.LocalDate;
 
 /**
- * Data Transfer Object for transferring information about card between layers
- * and in REST API responses/requests.
+ * Data Transfer Object for creating or updating a card in REST API requests.
  */
 @Data
-public class CardInfoDto {
-
-    /**
-     * Unique identifier of the card. Must be not NULL.
-     */
-    @NotNull
-    private Long id;
+public class CardInfoRequestDto {
 
     /**
      * Unique identifier of the user from table "users". Must be not NULL and must contain at least 1 symbol.

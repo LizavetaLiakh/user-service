@@ -1,6 +1,7 @@
 package com.innowise.microservice.service;
 
-import com.innowise.microservice.dto.CardInfoDto;
+import com.innowise.microservice.dto.CardInfoRequestDto;
+import com.innowise.microservice.dto.CardInfoResponseDto;
 import com.innowise.microservice.entity.CardInfo;
 import com.innowise.microservice.exception.CardNotFoundException;
 import com.innowise.microservice.exception.CardNumberExistsException;
@@ -14,7 +15,6 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
 import java.util.List;
 
 /**
@@ -41,14 +41,14 @@ public class CardInfoService {
      * @return created card as DTO
      */
     @CachePut(value = "CARD_CACHE", key = "#result.id()")
-    public CardInfoDto createCard(CardInfoDto cardDto) {
+    public CardInfoResponseDto createCard(CardInfoRequestDto cardDto) {
         repository.findByNumber(cardDto.getNumber())
                 .ifPresent(sameNumberCard -> {
                     throw new CardNumberExistsException(cardDto.getNumber());
                 });
         CardInfo card = mapper.toCardInfo(cardDto);
         CardInfo savedCard = repository.save(card);
-        return mapper.toCardInfoDto(savedCard);
+        return mapper.toCardInfoResponseDto(savedCard);
     }
 
     /**
@@ -57,9 +57,9 @@ public class CardInfoService {
      * @return card as DTO if found, empty if not found
      */
     @Cacheable(value = "CARD_CACHE", key = "#id")
-    public CardInfoDto getCardById(Long id) {
+    public CardInfoResponseDto getCardById(Long id) {
         return repository.findById(id)
-                .map(mapper::toCardInfoDto)
+                .map(mapper::toCardInfoResponseDto)
                 .orElseThrow(() -> new CardNotFoundException(id));
     }
 
@@ -68,10 +68,10 @@ public class CardInfoService {
      * @param ids list of cards' unique identifiers
      * @return list of cards as DTOs
      */
-    public List<CardInfoDto> getCardsByIds(Iterable<Long> ids) {
-        List<CardInfoDto> cards = repository.findAllById(ids)
+    public List<CardInfoResponseDto> getCardsByIds(Iterable<Long> ids) {
+        List<CardInfoResponseDto> cards = repository.findAllById(ids)
                 .stream()
-                .map(mapper::toCardInfoDto)
+                .map(mapper::toCardInfoResponseDto)
                 .toList();
         if (cards.isEmpty()) {
             throw new EmptyCardListException(ids);
@@ -86,10 +86,12 @@ public class CardInfoService {
      */
     @CachePut(value = "CARD_CACHE", key = "#id")
     @Transactional
-    public CardInfoDto updateCardById(Long id, CardInfoDto newCardDto) {
+    public CardInfoResponseDto updateCardById(Long id, CardInfoRequestDto newCardDto) {
         repository.findByNumber(newCardDto.getNumber())
                 .ifPresent(sameNumberCard -> {
-                    throw new CardNumberExistsException(newCardDto.getNumber());
+                    if (!sameNumberCard.getId().equals(id)) {
+                        throw new CardNumberExistsException(newCardDto.getNumber());
+                    }
                 });
         int updated = repository.updateCardInfo(id, newCardDto.getUserId(), newCardDto.getNumber(), newCardDto.getHolder(),
                 newCardDto.getExpirationDate());
@@ -97,7 +99,7 @@ public class CardInfoService {
             throw new CardNotFoundException(id);
         }
         return repository.findById(id)
-                .map(mapper::toCardInfoDto)
+                .map(mapper::toCardInfoResponseDto)
                 .orElseThrow(() -> new CardNotFoundException(id));
     }
 
