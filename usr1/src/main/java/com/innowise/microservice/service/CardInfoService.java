@@ -93,8 +93,8 @@ public class CardInfoService {
                         throw new CardNumberExistsException(newCardDto.getNumber());
                     }
                 });
-        int updated = repository.updateCardInfo(id, newCardDto.getUserId(), newCardDto.getNumber(), newCardDto.getHolder(),
-                newCardDto.getExpirationDate());
+        int updated = repository.updateCardInfo(id, newCardDto.getUserId().getId(), newCardDto.getNumber(),
+                newCardDto.getHolder(), newCardDto.getExpirationDate());
         if (updated == 0) {
             throw new CardNotFoundException(id);
         }
