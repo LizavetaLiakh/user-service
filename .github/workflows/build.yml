@@ -9,23 +9,47 @@ on:
 
 jobs:
   build:
-    name: Build, test, code analysis, docker image
+    name: Build, test, analyze, Docker
     runs-on: ubuntu-latest
 
     services:
       postgres:
         image: postgres:15
         env:
-          POSTGRES_DB: mydb
           POSTGRES_USER: root
           POSTGRES_PASSWORD: 1111
+          POSTGRES_DB: mydb
         ports:
           - 5432:5432
         options: >-
-          --health-cmd "pg_isready -U root"
+          --health-cmd "pg_isready -U root -d mydb"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DB_HOST: localhost
+      DB_PORT: 5432
+      DB_NAME: mydb
+      DB_USERNAME: root
+      DB_PASSWORD: 1111
+      REDIS_HOST: localhost
+      REDIS_PORT: 6379
+      SPRING_PROFILES_ACTIVE: docker
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
+      SONAR_ORGANIZATION: ${{ secrets.SONAR_ORGANIZATION }}
+      SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 
     steps:
       - name: Checkout code
@@ -46,27 +70,26 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
 
-      - name: Set environment variables
-        run: |
-          echo "DB_HOST=localhost" >> $GITHUB_ENV
-          echo "DB_PORT=5432" >> $GITHUB_ENV
-          echo "DB_NAME=mydb" >> $GITHUB_ENV
-          echo "DB_USERNAME=root" >> $GITHUB_ENV
-          echo "DB_PASSWORD=1111" >> $GITHUB_ENV
-          echo "SPRING_PROFILES_ACTIVE=docker" >> $GITHUB_ENV
-          echo "REDIS_HOST=redis" >> $GITHUB_ENV
-          echo "REDIS_PORT=6379" >> $GITHUB_ENV
-
       - name: Wait for PostgreSQL
         run: |
-          echo "Waiting for PostgreSQL to start..."
-          until pg_isready -h localhost -p 5432 -U root; do
+          echo "Waiting for PostgreSQL..."
+          for i in {1..15}; do
+            pg_isready -h localhost -p 5432 -U root && echo "PostgreSQL is ready" && break
             echo "Waiting..."
             sleep 2
           done
 
-      - name: Build and run tests
-        run: mvn -f usr1/pom.xml clean verify
+      - name: Wait for Redis
+        run: |
+          echo "Waiting for Redis..."
+          for i in {1..15}; do
+            (echo PING | nc localhost 6379 | grep PONG) && echo "Redis is ready" && break
+            echo "Waiting..."
+            sleep 2
+          done
+
+      - name: Build and run unit tests
+        run: mvn -f usr1/pom.xml clean verify -Dspring.profiles.active=docker
 
       - name: SonarCloud scan
         env:
