@@ -30,6 +30,7 @@ jobs:
 
       - name: Build and run tests
         run: mvn clean verify -DskipTests=false
+        working-directory: ./usr1
 
       - name: SonarCloud scan
         env:
@@ -40,6 +41,7 @@ jobs:
             -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }} \
             -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
             -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+        working-directory: ./usr1
 
       - name: Build Docker image
         run: |
