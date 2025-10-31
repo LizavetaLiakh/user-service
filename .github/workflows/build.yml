@@ -13,31 +13,11 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      DB_NAME: ${{ secrets.DB_NAME }}
-      DB_USERNAME: ${{ secrets.DB_USERNAME }}
-      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-      DB_HOST: localhost
-      DB_PORT: 5432
       SPRING_PROFILES_ACTIVE: docker
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
       SONAR_ORGANIZATION: ${{ secrets.SONAR_ORGANIZATION }}
       SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-
-    services:
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_DB: $DB_NAME
-          POSTGRES_USER: $DB_USERNAME
-          POSTGRES_PASSWORD: $DB_PASSWORD
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd "pg_isready -U $DB_USERNAME -d $DB_NAME"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
 
     steps:
       - name: Checkout code
@@ -58,17 +38,8 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
 
-      - name: Wait for PostgreSQL to be ready
-        run: |
-          echo "Waiting for PostgreSQL to start..."
-          for i in {1..15}; do
-            nc -z localhost 5432 && echo "PostgreSQL is ready" && break
-            echo "Waiting..."
-            sleep 2
-          done
-
       - name: Build and run unit tests only
-        run: mvn -f usr1/pom.xml clean verify -DskipITs=true -Dspring.profiles.active=docker
+        run: mvn -f usr1/pom.xml clean verify -DskipITs=true
 
       - name: SonarCloud scan
         env:
