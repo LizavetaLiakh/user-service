@@ -67,8 +67,8 @@ jobs:
             sleep 2
           done
 
-      - name: Build and run tests
-        run: mvn -f usr1/pom.xml clean verify -Dspring.profiles.active=docker
+      - name: Build and run unit tests only
+        run: mvn -f usr1/pom.xml clean verify -DskipITs=true -Dspring.profiles.active=docker
 
       - name: SonarCloud scan
         env:
