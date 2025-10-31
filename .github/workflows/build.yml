@@ -9,6 +9,32 @@ jobs:
   build:
     name: Build, test, analyze and build docker image
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: ${{ secrets.DB_NAME }}
+          POSTGRES_USER: ${{ secrets.DB_USERNAME }}
+          POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        ports:
+          - 5432:5432
+        options:
+          --health-cmd "pg_isready -U ${{ secrets.DB_USERNAME }}"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DB_HOST: localhost
+      DB_PORT: 5432
+      DB_NAME: ${{ secrets.DB_NAME }}
+      DB_USERNAME: ${{ secrets.DB_USERNAME }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      REDIS_HOST: ${{ secrets.REDIS_HOST }}
+      REDIS_PORT: ${{ secrets.REDIS_PORT }}
+      SPRING_PROFILES_ACTIVE: docker
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -28,9 +54,17 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
 
+      - name: Wait for PostgreSQL to be ready
+        run: |
+          echo "Waiting for PostgreSQL to start"
+          for i in {1..15} do
+            nc -z localhost 5432 && echo "PostgreSLQ is ready" && break
+            echo "Waiting..."
+            sleep 2
+          done
+
       - name: Build and run tests
-        run: mvn clean verify -DskipTests=false
-        working-directory: ./usr1
+        run: mvn -f usr1/pom.xml clean verify -Dspring.profiles.active=docker
 
       - name: SonarCloud scan
         env:
@@ -41,8 +75,6 @@ jobs:
             -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }} \
             -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
             -Dsonar.login=${{ secrets.SONAR_TOKEN }}
-        working-directory: ./usr1
 
       - name: Build Docker image
-        run: |
-          docker build -t user-service:latest .
+        run: docker build -t user-service:latest .
