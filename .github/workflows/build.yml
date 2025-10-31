@@ -12,6 +12,7 @@ jobs:
     name: Build, test, analyze and build docker image
     runs-on: ubuntu-latest
 
+    # Секреты передаются в шаги через env
     env:
       DB_NAME: ${{ secrets.DB_NAME }}
       DB_USERNAME: ${{ secrets.DB_USERNAME }}
@@ -24,17 +25,18 @@ jobs:
       SONAR_ORGANIZATION: ${{ secrets.SONAR_ORGANIZATION }}
       SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 
+    # Postgres сервис для тестов с тестовыми учетными данными
     services:
       postgres:
         image: postgres:15
         env:
-          POSTGRES_DB: ${{ secrets.DB_NAME }}
-          POSTGRES_USER: ${{ secrets.DB_USERNAME }}
-          POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          POSTGRES_DB: userdb
+          POSTGRES_USER: root
+          POSTGRES_PASSWORD: 1111
         ports:
           - 5432:5432
         options: >-
-          --health-cmd "pg_isready -U ${{ secrets.DB_USERNAME }} -d ${{ secrets.DB_NAME }}"
+          --health-cmd "pg_isready -U root -d userdb"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
@@ -75,10 +77,10 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
-            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} \
-            -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }} \
-            -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
-            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+            -Dsonar.projectKey=$SONAR_PROJECT_KEY \
+            -Dsonar.organization=$SONAR_ORGANIZATION \
+            -Dsonar.host.url=$SONAR_HOST_URL \
+            -Dsonar.login=$SONAR_TOKEN
 
       - name: Build Docker image
         run: docker build -t user-service:latest .
