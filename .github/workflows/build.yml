@@ -9,32 +9,32 @@ on:
 
 jobs:
   build:
-    name: Build, test, analyze and build Docker image
+    name: Build, test, analyze and build docker image
     runs-on: ubuntu-latest
 
     env:
-      SPRING_PROFILES_ACTIVE: docker
-      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
-      SONAR_ORGANIZATION: ${{ secrets.SONAR_ORGANIZATION }}
-      SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
       DB_NAME: ${{ secrets.DB_NAME }}
       DB_USERNAME: ${{ secrets.DB_USERNAME }}
       DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
       DB_HOST: localhost
       DB_PORT: 5432
+      SPRING_PROFILES_ACTIVE: docker
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
+      SONAR_ORGANIZATION: ${{ secrets.SONAR_ORGANIZATION }}
+      SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 
     services:
       postgres:
         image: postgres:15
         env:
-          POSTGRES_DB: ${{ secrets.DB_NAME }}
-          POSTGRES_USER: ${{ secrets.DB_USERNAME }}
-          POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          POSTGRES_DB: $DB_NAME
+          POSTGRES_USER: $DB_USERNAME
+          POSTGRES_PASSWORD: $DB_PASSWORD
         ports:
           - 5432:5432
         options: >-
-          --health-cmd "pg_isready -U ${{ secrets.DB_USERNAME }} -d ${{ secrets.DB_NAME }}"
+          --health-cmd "pg_isready -U $DB_USERNAME -d $DB_NAME"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
@@ -58,22 +58,17 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
 
-      - name: Wait for PostgreSQL
+      - name: Wait for PostgreSQL to be ready
         run: |
           echo "Waiting for PostgreSQL to start..."
           for i in {1..15}; do
-            pg_isready -h localhost -p 5432 -U $DB_USERNAME && echo "Postgres ready" && break
+            nc -z localhost 5432 && echo "PostgreSQL is ready" && break
             echo "Waiting..."
             sleep 2
           done
 
       - name: Build and run tests
-        run: |
-          mvn -f usr1/pom.xml clean verify \
-            -Dspring.datasource.url=jdbc:postgresql://$DB_HOST:$DB_PORT/$DB_NAME \
-            -Dspring.datasource.username=$DB_USERNAME \
-            -Dspring.datasource.password=$DB_PASSWORD \
-            -Dspring.profiles.active=docker
+        run: mvn -f usr1/pom.xml clean verify -Dspring.profiles.active=docker
 
       - name: SonarCloud scan
         env:
