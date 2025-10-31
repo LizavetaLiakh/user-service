@@ -12,12 +12,20 @@ jobs:
     name: Build, test, analyze and build docker image
     runs-on: ubuntu-latest
 
-    env:
-      SPRING_PROFILES_ACTIVE: docker
-      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
-      SONAR_ORGANIZATION: ${{ secrets.SONAR_ORGANIZATION }}
-      SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: root
+          POSTGRES_PASSWORD: 1111
+          POSTGRES_DB: mydb
+        ports:
+          - 5432:5432
+        options:
+          --health-cmd "pg_isready -U root"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
       - name: Checkout code
@@ -38,7 +46,16 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
 
-      - name: Build and run unit tests only
+      - name: Wait for PostgreSQL
+        run: |
+          echo "Waiting for PostgreSQL to start..."
+          for i in {1..15}; do
+            nc -z localhost 5432 && echo "PostgreSQL is ready" && break
+            echo "Waiting..."
+            sleep 2
+          done
+
+      - name: Build and run tests
         run: mvn -f usr1/pom.xml clean verify -DskipITs=true
 
       - name: SonarCloud scan
@@ -46,10 +63,10 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
-            -Dsonar.projectKey=$SONAR_PROJECT_KEY \
-            -Dsonar.organization=$SONAR_ORGANIZATION \
-            -Dsonar.host.url=$SONAR_HOST_URL \
-            -Dsonar.login=$SONAR_TOKEN
+            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} \
+            -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }} \
+            -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
 
       - name: Build Docker image
         run: docker build -t user-service:latest .
