@@ -9,19 +9,19 @@ on:
 
 jobs:
   build:
-    name: Build, test, analyze and build docker image
+    name: Build, test, code analysis, docker image
     runs-on: ubuntu-latest
 
     services:
       postgres:
         image: postgres:15
         env:
+          POSTGRES_DB: mydb
           POSTGRES_USER: root
           POSTGRES_PASSWORD: 1111
-          POSTGRES_DB: mydb
         ports:
           - 5432:5432
-        options:
+        options: >-
           --health-cmd "pg_isready -U root"
           --health-interval 10s
           --health-timeout 5s
@@ -46,17 +46,27 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
 
+      - name: Set environment variables
+        run: |
+          echo "DB_HOST=localhost" >> $GITHUB_ENV
+          echo "DB_PORT=5432" >> $GITHUB_ENV
+          echo "DB_NAME=mydb" >> $GITHUB_ENV
+          echo "DB_USERNAME=root" >> $GITHUB_ENV
+          echo "DB_PASSWORD=1111" >> $GITHUB_ENV
+          echo "SPRING_PROFILES_ACTIVE=docker" >> $GITHUB_ENV
+          echo "REDIS_HOST=redis" >> $GITHUB_ENV
+          echo "REDIS_PORT=6379" >> $GITHUB_ENV
+
       - name: Wait for PostgreSQL
         run: |
           echo "Waiting for PostgreSQL to start..."
-          for i in {1..15}; do
-            nc -z localhost 5432 && echo "PostgreSQL is ready" && break
+          until pg_isready -h localhost -p 5432 -U root; do
             echo "Waiting..."
             sleep 2
           done
 
       - name: Build and run tests
-        run: mvn -f usr1/pom.xml clean verify -DskipITs=true
+        run: mvn -f usr1/pom.xml clean verify
 
       - name: SonarCloud scan
         env:
