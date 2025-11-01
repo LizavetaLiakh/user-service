@@ -18,13 +18,26 @@ services:
       - postgres
     working_dir: /liquibase
     volumes:
-      - ${DOCKER_LIQUIBASE_VOLUMES}
+      - ./usr1/src/main/resources/db/changelog:/liquibase/changelog
     command: >
       update
-      --url=jdbc:postgresql://postgres:${DB_PORT}/${DB_NAME}
-      --username=${DB_USERNAME}
-      --password=${DB_PASSWORD}
+      --url=jdbc:postgresql://postgres:5432/mydb
+      --username=root
+      --password=1111
       --changeLogFile=changelog/db.changelog-master.xml
+
+  userservice:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - postgres
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/mydb
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: 1111
+    ports:
+      - "8083:8083"
 
 volumes:
   postgres_data:
