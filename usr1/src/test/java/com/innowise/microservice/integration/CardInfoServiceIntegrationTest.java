@@ -11,7 +11,6 @@ import com.innowise.microservice.repository.UserRepository;
 import com.innowise.microservice.service.CardInfoService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 
 import java.time.LocalDate;
 import java.util.List;
