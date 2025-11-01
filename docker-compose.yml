@@ -1,0 +1,30 @@
+services:
+  postgres:
+    image: ${DOCKER_POSTGRES_IMAGE}
+    container_name: ${DOCKER_POSTGRES_CONTAINER_NAME}
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - ${DOCKER_POSTGRES_PORTS}
+    volumes:
+      - ${DOCKER_POSTGRES_VOLUMES}
+
+  liquibase:
+    image: ${DOCKER_LIQUIBASE_IMAGE}
+    container_name: ${DOCKER_LIQUIBASE_CONTAINER_NAME}
+    depends_on:
+      - postgres
+    working_dir: /liquibase
+    volumes:
+      - ${DOCKER_LIQUIBASE_VOLUMES}
+    command: >
+      update
+      --url=jdbc:postgresql://postgres:${DB_PORT}/${DB_NAME}
+      --username=${DB_USERNAME}
+      --password=${DB_PASSWORD}
+      --changeLogFile=changelog/db.changelog-master.xml
+
+volumes:
+  postgres_data:

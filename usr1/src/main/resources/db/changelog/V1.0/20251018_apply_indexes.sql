@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX uc_users_email ON users(email);
