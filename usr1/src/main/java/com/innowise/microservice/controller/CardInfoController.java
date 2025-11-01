@@ -1,6 +1,7 @@
 package com.innowise.microservice.controller;
 
-import com.innowise.microservice.dto.CardInfoDto;
+import com.innowise.microservice.dto.CardInfoRequestDto;
+import com.innowise.microservice.dto.CardInfoResponseDto;
 import com.innowise.microservice.service.CardInfoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,7 +40,7 @@ public class CardInfoController {
     }
 
     /**
-     * Creates a new user.
+     * Creates a new card.
      *
      * @param cardInfoDto New card's data.
      * @return Created card.
@@ -49,8 +50,8 @@ public class CardInfoController {
      * @response 500 Internal Server Error - Unexpected server error occurred.
      */
     @PostMapping("/add")
-    public ResponseEntity<CardInfoDto> addCard(@RequestBody CardInfoDto cardInfoDto) {
-        CardInfoDto newCard = service.createCard(cardInfoDto);
+    public ResponseEntity<CardInfoResponseDto> addCard(@RequestBody CardInfoRequestDto cardInfoDto) {
+        CardInfoResponseDto newCard = service.createCard(cardInfoDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(newCard);
     }
 
@@ -65,8 +66,8 @@ public class CardInfoController {
      * @response 500 Internal Server Error - Unexpected server error occurred.
      */
     @GetMapping("/get/{id}")
-    public ResponseEntity<CardInfoDto> getCardById(@PathVariable Long id) {
-        CardInfoDto card = service.getCardById(id);
+    public ResponseEntity<CardInfoResponseDto> getCardById(@PathVariable Long id) {
+        CardInfoResponseDto card = service.getCardById(id);
         return ResponseEntity.status(HttpStatus.OK).body(card);
     }
 
@@ -81,8 +82,8 @@ public class CardInfoController {
      * @response 500 Internal Server Error - Unexpected server error occurred.
      */
     @GetMapping("/get")
-    public ResponseEntity<List<CardInfoDto>> getCardsByIds(@RequestParam List<Long> ids) {
-        List<CardInfoDto> cards = service.getCardsByIds(ids);
+    public ResponseEntity<List<CardInfoResponseDto>> getCardsByIds(@RequestParam List<Long> ids) {
+        List<CardInfoResponseDto> cards = service.getCardsByIds(ids);
         return ResponseEntity.status(HttpStatus.OK).body(cards);
     }
 
@@ -99,9 +100,10 @@ public class CardInfoController {
      * @response 500 Internal Server Error - Unexpected server error occurred.
      */
     @PutMapping("/update/{id}")
-    public ResponseEntity<Void> updateCard(@PathVariable Long id, @RequestBody CardInfoDto cardInfoDto) {
-        service.updateCardById(id, cardInfoDto);
-        return ResponseEntity.status(HttpStatus.OK).build();
+    public ResponseEntity<CardInfoResponseDto> updateCard(@PathVariable Long id,
+                                                          @RequestBody CardInfoRequestDto cardInfoDto) {
+        CardInfoResponseDto updatedCard = service.updateCardById(id, cardInfoDto);
+        return ResponseEntity.status(HttpStatus.OK).body(updatedCard);
     }
 
     /**
@@ -116,6 +118,6 @@ public class CardInfoController {
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteCard(@PathVariable Long id) {
         service.deleteCardById(id);
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

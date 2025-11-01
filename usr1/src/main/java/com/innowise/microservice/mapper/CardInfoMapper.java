@@ -1,42 +1,43 @@
 package com.innowise.microservice.mapper;
 
-import com.innowise.microservice.dto.CardInfoDto;
+import com.innowise.microservice.dto.CardInfoRequestDto;
+import com.innowise.microservice.dto.CardInfoResponseDto;
 import com.innowise.microservice.entity.CardInfo;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 import java.util.List;
 
 /**
- * Mapper for converting CardInfoDto to CardInfo and CardInfo to CardInfoDto.
+ * Mapper for converting between CardInfo entity, CardInfoRequestDto and CardInfoResponseDto.
  */
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface CardInfoMapper {
 
     /**
-     * Maps CardInfo to CardInfoDto.
+     * Maps CardInfo entity entity to CardInfoResponseDto.
      * @param cardInfo entity object that needs to be mapped
-     * @return CardInfoDto object
+     * @return CardInfoResponseDto object
      */
-    CardInfoDto toCardInfoDto(CardInfo cardInfo);
+    CardInfoResponseDto toCardInfoResponseDto(CardInfo cardInfo);
 
     /**
-     * Maps list of CardInfos to list of CardInfoDto objects.
+     * Maps list of CardInfos to list of CardInfoResponseDto objects.
      * @param cardInfos list of entity objects that need to be mapped
-     * @return list of CardInfoDto objects
+     * @return list of CardInfoResponseDto objects
      */
-    List<CardInfoDto> toCardInfoDtoList(List<CardInfo> cardInfos);
+    List<CardInfoResponseDto> toCardInfoResponseDtoList(List<CardInfo> cardInfos);
 
     /**
-     * Maps CardInfoDto to CardInfo.
-     * @param cardInfoDto DTO object that needs to be mapped
-     * @return CardInfo object
+     * Maps CardInfoRequestDto to CardInfo entity.
+     * @param cardInfoRequestDto DTO object that needs to be mapped
+     * @return CardInfo entity
      */
-    CardInfo toCardInfo(CardInfoDto cardInfoDto);
+    CardInfo toCardInfo(CardInfoRequestDto cardInfoRequestDto);
 
     /**
-     * Maps list of CardInfoDtos to list of CardInfo objects.
-     * @param cardInfoDtos list of DTO objects that need to be mapped
+     * Maps list of CardInfoRequestDto to list of CardInfo entities.
+     * @param cardInfoRequestDtos list of DTO objects that need to be mapped
      * @return list of CardInfo objects
      */
-    List<CardInfo> toCardInfoList(List<CardInfoDto> cardInfoDtos);
+    List<CardInfo> toCardInfoList(List<CardInfoRequestDto> cardInfoRequestDtos);
 }

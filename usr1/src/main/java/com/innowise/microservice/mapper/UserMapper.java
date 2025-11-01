@@ -1,42 +1,43 @@
 package com.innowise.microservice.mapper;
 
-import com.innowise.microservice.dto.UserDto;
+import com.innowise.microservice.dto.UserRequestDto;
+import com.innowise.microservice.dto.UserResponseDto;
 import com.innowise.microservice.entity.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 import java.util.List;
 
 /**
- * Mapper for converting UserDto to User and User to UserDto.
+ * Mapper for converting between User entity, UserRequestDto and UserResponseDto.
  */
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface UserMapper {
 
     /**
-     * Maps User to UserDto.
+     * Maps User entity to UserResponseDto.
      * @param user entity object that needs to be mapped
-     * @return UserDto object
+     * @return UserResponseDto object
      */
-    UserDto toUserDto(User user);
+    UserResponseDto toUserResponseDto(User user);
 
     /**
-     * Maps list of Users to list of UserDto objects.
+     * Maps list of Users to list of UserResponseDto objects.
      * @param users list of entity objects that need to be mapped
-     * @return list of UserDto objects
+     * @return list of UserResponseDto objects
      */
-    List<UserDto> toUserDtoList(List<User> users);
+    List<UserResponseDto> toUserResponseDtoList(List<User> users);
 
     /**
-     * Maps UserDto to User.
-     * @param userDto DTO object that needs to be mapped
-     * @return User object
+     * Maps UserRequestDto to User entity.
+     * @param userRequestDto DTO object that needs to be mapped
+     * @return User entity
      */
-    User toUser(UserDto userDto);
+    User toUser(UserRequestDto userRequestDto);
 
     /**
-     * Maps list of UserDtos to list of User objects.
-     * @param userDtos list of DTO objects that need to be mapped
-     * @return list of User objects
+     * Maps list of UserRequestDto to list of User entities.
+     * @param userRequestDtos list of DTOs that need to be mapped
+     * @return list of User entities
      */
-    List<User> toUserList(List<UserDto> userDtos);
+    List<User> toUserList(List<UserRequestDto> userRequestDtos);
 }

@@ -1,21 +1,18 @@
 package com.innowise.microservice.dto;
 
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.Pattern;
 import lombok.Data;
+
 import java.time.LocalDate;
 
 /**
- * Data Transfer Object for transferring information about users between layers
- * and in REST API responses/requests.
+ * Data Transfer Object for creating or updating a user in REST API requests.
  */
 @Data
-public class UserDto {
-
-    /**
-     * Unique identifier of the user. Must not be NULL.
-     */
-    @NotNull
-    private Long id;
+public class UserRequestDto {
 
     /**
      * Name of the user. Must start with the capital letter and contain at least 1 symbol.

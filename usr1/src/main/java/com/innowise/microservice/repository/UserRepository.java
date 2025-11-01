@@ -14,9 +14,6 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    <S extends User> S save(S entity);
-    Optional<User> findById(Long id);
-    List<User> findAllById(Iterable<Long> ids);
     Optional<User> findByEmail(String email);
 
     @Modifying
@@ -24,6 +21,4 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "WHERE id = :id", nativeQuery = true)
     int updateUser(@Param("id") Long id, @Param("name") String name, @Param("surname") String surname
             , @Param("birthDate") LocalDate birthDate, @Param("email") String email);
-
-    void deleteById(Long id);
 }

@@ -1,7 +1,9 @@
 package com.innowise.microservice.controller;
 
-import com.innowise.microservice.dto.UserDto;
+import com.innowise.microservice.dto.UserRequestDto;
+import com.innowise.microservice.dto.UserResponseDto;
 import com.innowise.microservice.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -50,8 +52,8 @@ public class UserController {
      * @response 500 Internal Server Error - Unexpected server error occurred.
      */
     @PostMapping("/add")
-    public ResponseEntity<UserDto> addUser(@RequestBody UserDto userDto) {
-        UserDto newUser = service.createUser(userDto);
+    public ResponseEntity<UserResponseDto> addUser(@Valid @RequestBody UserRequestDto userDto) {
+        UserResponseDto newUser = service.createUser(userDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
     }
 
@@ -66,8 +68,8 @@ public class UserController {
      * @response 500 Internal Server Error - Unexpected server error occurred.
      */
     @GetMapping("/get/{id}")
-    public ResponseEntity<UserDto> getUserById(@PathVariable Long id) {
-        UserDto user = service.getUserById(id);
+    public ResponseEntity<UserResponseDto> getUserById(@PathVariable Long id) {
+        UserResponseDto user = service.getUserById(id);
         return ResponseEntity.status(HttpStatus.OK).body(user);
     }
 
@@ -82,8 +84,8 @@ public class UserController {
      * @response 500 Internal Server Error - Unexpected server error occurred.
      */
     @GetMapping("/get")
-    public ResponseEntity<List<UserDto>> getUsersByIds(@RequestParam List<Long> ids) {
-        List<UserDto> users = service.getUsersByIds(ids);
+    public ResponseEntity<List<UserResponseDto>> getUsersByIds(@RequestParam List<Long> ids) {
+        List<UserResponseDto> users = service.getUsersByIds(ids);
         return ResponseEntity.status(HttpStatus.OK).body(users);
     }
 
@@ -98,8 +100,8 @@ public class UserController {
      * @response 500 Internal Server Error - Unexpected server error occurred.
      */
     @GetMapping("/get/email")
-    public ResponseEntity<UserDto> getUserByEmail(@RequestParam String email) {
-        UserDto user = service.getUserByEmail(email);
+    public ResponseEntity<UserResponseDto> getUserByEmail(@RequestParam String email) {
+        UserResponseDto user = service.getUserByEmail(email);
         return ResponseEntity.status(HttpStatus.OK).body(user);
     }
 
@@ -117,9 +119,10 @@ public class UserController {
      * @response 500 Internal Server Error - Unexpected server error occurred.
      */
     @PutMapping("/update/{id}")
-    public ResponseEntity<Void> updateUser(@PathVariable Long id, @RequestBody UserDto userDto) {
-        service.updateUserById(id, userDto);
-        return ResponseEntity.status(HttpStatus.OK).build();
+    public ResponseEntity<UserResponseDto> updateUser(@PathVariable Long id,
+                                                      @Valid @RequestBody UserRequestDto userDto) {
+        UserResponseDto updatedUser = service.updateUserById(id, userDto);
+        return ResponseEntity.status(HttpStatus.OK).body(updatedUser);
     }
 
     /**

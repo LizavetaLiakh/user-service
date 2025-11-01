@@ -1,4 +1,4 @@
-package com.innowise.microservice.exception;
+package com.innowise.microservice.dto;
 
 import lombok.Getter;
 import lombok.Setter;
