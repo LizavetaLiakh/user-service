@@ -19,6 +19,7 @@ public interface CardInfoRepository extends JpaRepository<CardInfo, Long> {
     <S extends CardInfo> S save(S entity);
     Optional<CardInfo> findById(Long id);
     List<CardInfo> findAllById(Iterable<Long> ids);
+    Optional<CardInfo> findByNumber(String number);
 
     @Modifying
     @Transactional

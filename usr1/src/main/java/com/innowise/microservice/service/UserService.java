@@ -2,8 +2,13 @@ package com.innowise.microservice.service;
 
 import com.innowise.microservice.dto.UserDto;
 import com.innowise.microservice.entity.User;
+import com.innowise.microservice.exception.EmptyUserListException;
+import com.innowise.microservice.exception.UserEmailExistsException;
+import com.innowise.microservice.exception.UserNotFoundException;
+import com.innowise.microservice.exception.UserWithEmailNotFoundException;
 import com.innowise.microservice.mapper.UserMapper;
 import com.innowise.microservice.repository.UserRepository;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,6 +39,10 @@ public class UserService {
      * @return created user as DTO
      */
     public UserDto createUser(UserDto userDto) {
+        repository.findByEmail(userDto.getEmail())
+                .ifPresent(sameEmailUser -> {
+                    throw new UserEmailExistsException(userDto.getEmail());
+                });
         User user = mapper.toUser(userDto);
         User savedUser = repository.save(user);
         return mapper.toUserDto(savedUser);
@@ -44,9 +53,10 @@ public class UserService {
      * @param id user's unique identifier
      * @return user as DTO if found, empty if not found
      */
-    public Optional<UserDto> getUserById(Long id) {
+    public UserDto getUserById(Long id) {
         return repository.findById(id)
-                .map(mapper::toUserDto);
+                .map(mapper::toUserDto)
+                .orElseThrow(() -> new UserNotFoundException(id));
     }
 
     /**
@@ -55,10 +65,14 @@ public class UserService {
      * @return list of users as DTOs
      */
     public List<UserDto> getUsersByIds(Iterable<Long> ids) {
-        return repository.findAllById(ids)
+        List<UserDto> users = repository.findAllById(ids)
                 .stream()
                 .map(mapper::toUserDto)
                 .toList();
+        if (users.isEmpty()) {
+            throw new EmptyUserListException(ids);
+        }
+        return users;
     }
 
     /**
@@ -66,21 +80,28 @@ public class UserService {
      * @param email user's email
      * @return user as DTO if found, empty if not found
      */
-    public Optional<UserDto> getUserByEmail(String email) {
+    public UserDto getUserByEmail(String email) {
         return repository.findByEmail(email)
-                .map(mapper::toUserDto);
+                .map(mapper::toUserDto)
+                .orElseThrow(() -> new UserWithEmailNotFoundException(email));
     }
 
     /**
      * Updates a user by id.
      * @param id user's unique identifier
      * @param newUserDto UserDto that contains current data
-     * @return number of updated rows, 0 if user was not found
      */
     @Transactional
-    public int updateUserById(Long id, UserDto newUserDto) {
-        return repository.updateUser(id, newUserDto.getName(), newUserDto.getSurname(), newUserDto.getBirthDate(),
-                newUserDto.getEmail());
+    public void updateUserById(Long id, UserDto newUserDto) {
+        repository.findByEmail(newUserDto.getEmail())
+                .ifPresent(sameEmailUser -> {
+                    throw new UserEmailExistsException(newUserDto.getEmail());
+                });
+        int updated = repository.updateUser(id, newUserDto.getName(), newUserDto.getSurname(),
+                newUserDto.getBirthDate(), newUserDto.getEmail());
+        if (updated == 0) {
+            throw new UserNotFoundException(id);
+        }
     }
 
     /**
@@ -89,6 +110,10 @@ public class UserService {
      */
     @Transactional
     public void deleteUserById(Long id) {
-        repository.deleteById(id);
+        try {
+            repository.deleteById(id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new UserNotFoundException(id);
+        }
     }
 }
