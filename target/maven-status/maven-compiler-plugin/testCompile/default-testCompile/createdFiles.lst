@@ -1,0 +1,5 @@
+com\innowise\microservice\service\CardInfoServiceTest.class
+com\innowise\microservice\integration\AbstractIntegrationTest.class
+com\innowise\microservice\integration\UserServiceIntegrationTest.class
+com\innowise\microservice\integration\CardInfoServiceIntegrationTest.class
+com\innowise\microservice\service\UserServiceTest.class
