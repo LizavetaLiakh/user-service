@@ -1,5 +1,5 @@
 services:
-  postgres:
+  postgres-user:
     image: ${DOCKER_POSTGRES_IMAGE}
     container_name: ${DOCKER_POSTGRES_CONTAINER_NAME}
     environment:
@@ -11,31 +11,64 @@ services:
     volumes:
       - ${DOCKER_POSTGRES_VOLUMES}
 
-  liquibase:
+  liquibase-user:
     image: ${DOCKER_LIQUIBASE_IMAGE}
     container_name: ${DOCKER_LIQUIBASE_CONTAINER_NAME}
     depends_on:
-      - postgres
+      - postgres-user
     working_dir: /liquibase
     volumes:
       - ./usr1/src/main/resources/db/changelog:/liquibase/changelog
     command: >
       update
-      --url=jdbc:postgresql://postgres:5432/mydb
+      --url=jdbc:postgresql://postgres-user:5432/mydb
       --username=root
       --password=1111
       --changeLogFile=changelog/db.changelog-master.xml
 
+  postgres-authentication:
+    image: ${DOCKER_POSTGRES_IMAGE}
+    container_name: ${DOCKER_POSTGRES_CONTAINER_NAME_AUTH}
+    environment:
+      POSTGRES_DB: ${DB_NAME_AUTH}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - ${DOCKER_POSTGRES_PORTS_AUTH}
+    volumes:
+      - ${DOCKER_POSTGRES_VOLUMES_AUTH}
+
+  liquibase-authentication:
+    image: ${DOCKER_LIQUIBASE_IMAGE}
+    container_name: ${DOCKER_LIQUIBASE_CONTAINER_NAME_AUTH}
+    depends_on:
+      - postgres-authentication
+    working_dir: /liquibase
+    volumes:
+      - ./auth1/src/main/resources/db/changelog:/liquibase/changelog
+    command: >
+      update
+      --url=jdbc:postgresql://postgres-authentication:5432/mydb_auth
+      --username=root
+      --password=1111
+      --changeLogFile=changelog/db.changelog-master.xml
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+
   userservice:
     build:
-      context: .
+      context: ./usr1
       dockerfile: Dockerfile
     depends_on:
-      - postgres
+      - postgres-user
+      - redis
     environment:
       SPRING_PROFILES_ACTIVE: docker
       SPRING_CONFIG_LOCATION: /config/
-      DB_HOST: postgres
+      DB_HOST: postgres-user
       DB_PORT: ${DB_PORT}
       DB_NAME: ${DB_NAME}
       DB_USERNAME: ${DB_USERNAME}
@@ -47,10 +80,30 @@ services:
     ports:
       - "8083:8083"
 
-  redis:
-    image: redis:7
+  authenticationservice:
+    build:
+      context: ./auth1
+      dockerfile: Dockerfile
+    depends_on:
+      - postgres-authentication
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_CONFIG_LOCATION: /config/
+      DB_HOST: postgres-authentication
+      DB_PORT: ${DB_PORT}
+      DB_NAME: ${DB_NAME_AUTH}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      REDIS_HOST: redis
+      REDIS_PORT: ${REDIS_PORT}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_ACCESS_EXPIRATION: ${JWT_ACCESS_EXPIRATION}
+      JWT_REFRESH_EXPIRATION: ${JWT_REFRESH_EXPIRATION}
+    volumes:
+      - ./auth1/src/main/resources:/config
     ports:
-      - "6379:6379"
+      - "8084:8084"
 
 volumes:
   postgres_data:
+  postgres_auth_data:
