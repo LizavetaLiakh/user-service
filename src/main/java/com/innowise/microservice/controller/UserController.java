@@ -6,6 +6,7 @@ import com.innowise.microservice.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -51,6 +52,7 @@ public class UserController {
      * @response 409 Conflict - A user with the given email already exists.
      * @response 500 Internal Server Error - Unexpected server error occurred.
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/add")
     public ResponseEntity<UserResponseDto> addUser(@Valid @RequestBody UserRequestDto userDto) {
         UserResponseDto newUser = service.createUser(userDto);
@@ -67,6 +69,7 @@ public class UserController {
      * @response 404 Not Found - User not found.
      * @response 500 Internal Server Error - Unexpected server error occurred.
      */
+    @PreAuthorize("@securityService.isOwnerOrAdmin(#id)")
     @GetMapping("/get/{id}")
     public ResponseEntity<UserResponseDto> getUserById(@PathVariable Long id) {
         UserResponseDto user = service.getUserById(id);
@@ -83,6 +86,7 @@ public class UserController {
      * @response 404 Not Found - Users not found.
      * @response 500 Internal Server Error - Unexpected server error occurred.
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/get")
     public ResponseEntity<List<UserResponseDto>> getUsersByIds(@RequestParam List<Long> ids) {
         List<UserResponseDto> users = service.getUsersByIds(ids);
@@ -99,6 +103,7 @@ public class UserController {
      * @response 404 Not Found - User not found.
      * @response 500 Internal Server Error - Unexpected server error occurred.
      */
+    @PreAuthorize("@securityService.isOwnerOrAdmin(#id)")
     @GetMapping("/get/email")
     public ResponseEntity<UserResponseDto> getUserByEmail(@RequestParam String email) {
         UserResponseDto user = service.getUserByEmail(email);
@@ -118,6 +123,7 @@ public class UserController {
      * @response 409 Conflict - A user with the given email already exists.
      * @response 500 Internal Server Error - Unexpected server error occurred.
      */
+    @PreAuthorize("@securityService.isOwnerOrAdmin(#id)")
     @PutMapping("/update/{id}")
     public ResponseEntity<UserResponseDto> updateUser(@PathVariable Long id,
                                                       @Valid @RequestBody UserRequestDto userDto) {
@@ -134,6 +140,7 @@ public class UserController {
      * @response 404 Not Found - User not found.
      * @response 500 Internal Server Error - Unexpected server error occurred.
      */
+    @PreAuthorize("@securityService.isOwnerOrAdmin(#id)")
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         service.deleteUserById(id);

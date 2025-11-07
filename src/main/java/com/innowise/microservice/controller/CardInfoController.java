@@ -5,6 +5,7 @@ import com.innowise.microservice.dto.CardInfoResponseDto;
 import com.innowise.microservice.service.CardInfoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -49,6 +50,7 @@ public class CardInfoController {
      * @response 201 Created - New card successfully created.
      * @response 500 Internal Server Error - Unexpected server error occurred.
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/add")
     public ResponseEntity<CardInfoResponseDto> addCard(@RequestBody CardInfoRequestDto cardInfoDto) {
         CardInfoResponseDto newCard = service.createCard(cardInfoDto);
@@ -65,6 +67,7 @@ public class CardInfoController {
      * @response 404 Not Found - Card not found.
      * @response 500 Internal Server Error - Unexpected server error occurred.
      */
+    @PreAuthorize("@securityService.isOwnerOrAdmin(#id)")
     @GetMapping("/get/{id}")
     public ResponseEntity<CardInfoResponseDto> getCardById(@PathVariable Long id) {
         CardInfoResponseDto card = service.getCardById(id);
@@ -81,6 +84,7 @@ public class CardInfoController {
      * @response 404 Not Found - Cards not found.
      * @response 500 Internal Server Error - Unexpected server error occurred.
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/get")
     public ResponseEntity<List<CardInfoResponseDto>> getCardsByIds(@RequestParam List<Long> ids) {
         List<CardInfoResponseDto> cards = service.getCardsByIds(ids);
@@ -99,6 +103,7 @@ public class CardInfoController {
      * @response 404 Not Found - Card not found.
      * @response 500 Internal Server Error - Unexpected server error occurred.
      */
+    @PreAuthorize("@securityService.isOwnerOrAdmin(#id)")
     @PutMapping("/update/{id}")
     public ResponseEntity<CardInfoResponseDto> updateCard(@PathVariable Long id,
                                                           @RequestBody CardInfoRequestDto cardInfoDto) {
@@ -115,6 +120,7 @@ public class CardInfoController {
      * @response 404 Not Found - Card not found.
      * @response 500 Internal Server Error - Unexpected server error occurred.
      */
+    @PreAuthorize("@securityService.isOwnerOrAdmin(#id)")
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteCard(@PathVariable Long id) {
         service.deleteCardById(id);
