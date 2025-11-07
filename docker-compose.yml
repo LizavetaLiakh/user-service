@@ -104,6 +104,15 @@ services:
       - ./auth1/src/main/resources:/config
     ports:
       - "8084:8080"
+    
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.4.4
+    command: start-dev
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+    ports:
+      - 8089:8080
 
 volumes:
   postgres_data:
