@@ -102,7 +102,7 @@ services:
     volumes:
       - ./auth1/src/main/resources:/config
     ports:
-      - "8084:8084"
+      - "8084:8080"
 
 volumes:
   postgres_data:
