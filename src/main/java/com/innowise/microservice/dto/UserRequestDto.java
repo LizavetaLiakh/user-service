@@ -17,15 +17,13 @@ public class UserRequestDto {
     /**
      * Name of the user. Must start with the capital letter and contain at least 1 symbol.
      */
-    @NotBlank
-    @Pattern(regexp = "[A-Z][a-z]*")
+    @Pattern(regexp = "[A-Z][a-zA-Z’\\\\-]*")
     private String name;
 
     /**
      * Surname of the user. Must start with the capital letter and contain at least 1 symbol.
      */
-    @NotBlank
-    @Pattern(regexp = "[A-Z][a-z]*")
+    @Pattern(regexp = "[A-Z][a-zA-Z’\\\\-]*")
     private String surname;
 
     /**

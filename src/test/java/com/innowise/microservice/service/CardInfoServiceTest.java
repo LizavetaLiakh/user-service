@@ -54,14 +54,14 @@ public class CardInfoServiceTest {
                 LocalDate.of(2027, 11, 10));
 
         requestCardDto = new CardInfoRequestDto();
-        requestCardDto.setUserId(user);
+        requestCardDto.setUserId(user.getId());
         requestCardDto.setNumber("1234123412341234");
         requestCardDto.setHolder("Hanna Montana");
         requestCardDto.setExpirationDate(LocalDate.of(2027, 11, 10));
 
         responseCardDto = new CardInfoResponseDto();
         responseCardDto.setId(1L);
-        responseCardDto.setUserId(user);
+        responseCardDto.setUserId(user.getId());
         responseCardDto.setNumber("1234123412341234");
         responseCardDto.setHolder("Hanna Montana");
         responseCardDto.setExpirationDate(LocalDate.of(2027, 11, 10));
@@ -74,7 +74,7 @@ public class CardInfoServiceTest {
 
         responseCardDto2 = new CardInfoResponseDto();
         responseCardDto2.setId(2L);
-        responseCardDto2.setUserId(user2);
+        responseCardDto2.setUserId(user2.getId());
         responseCardDto2.setNumber("4444888844449999");
         responseCardDto2.setHolder("Patrick Wong");
         responseCardDto2.setExpirationDate(LocalDate.of(2027, 12, 9));
@@ -168,7 +168,7 @@ public class CardInfoServiceTest {
 
     @Test
     void testUpdateCardById() {
-        requestCardDto.setUserId(user2);
+        requestCardDto.setUserId(user2.getId());
         requestCardDto.setNumber("4444888844449999");
         requestCardDto.setHolder("Patrick Wong");
         requestCardDto.setExpirationDate(LocalDate.of(2027, 12, 9));
@@ -181,7 +181,7 @@ public class CardInfoServiceTest {
         CardInfoResponseDto resultCardResponseDto = service.updateCardById(1L, requestCardDto);
 
         assertNotNull(resultCardResponseDto);
-        assertEquals(user2, resultCardResponseDto.getUserId());
+        assertEquals(user2.getId(), resultCardResponseDto.getUserId());
         assertEquals("4444888844449999", resultCardResponseDto.getNumber());
         assertEquals("Patrick Wong", resultCardResponseDto.getHolder());
         assertEquals(LocalDate.of(2027, 12, 9), resultCardResponseDto.getExpirationDate());
@@ -195,7 +195,7 @@ public class CardInfoServiceTest {
 
     @Test
     void testUpdateCardNumberExists() {
-        requestCardDto.setUserId(user2);
+        requestCardDto.setUserId(user2.getId());
         requestCardDto.setNumber("4444888844449999");
         requestCardDto.setHolder("Patrick Bom");
         requestCardDto.setExpirationDate(LocalDate.of(2027, 11, 10));
@@ -214,13 +214,13 @@ public class CardInfoServiceTest {
 
     @Test
     void testUpdateCardInfoNotFound() {
-        requestCardDto.setUserId(user2);
+        requestCardDto.setUserId(user2.getId());
         requestCardDto.setNumber("4444888844448888");
         requestCardDto.setHolder("Patrick Bom");
         requestCardDto.setExpirationDate(LocalDate.of(2028, 3, 25));
 
         when(repository.findByNumber(requestCardDto.getNumber())).thenReturn(Optional.empty());
-        when(repository.updateCardInfo(eq(2L), eq(requestCardDto.getUserId().getId()),
+        when(repository.updateCardInfo(eq(2L), eq(requestCardDto.getUserId()),
                 eq(requestCardDto.getNumber()), eq(requestCardDto.getHolder()),
                 eq(requestCardDto.getExpirationDate()))).thenReturn(1);
         when(repository.findById(2L)).thenReturn(Optional.empty());

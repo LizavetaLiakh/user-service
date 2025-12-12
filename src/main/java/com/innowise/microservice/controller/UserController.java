@@ -103,7 +103,7 @@ public class UserController {
      * @response 404 Not Found - User not found.
      * @response 500 Internal Server Error - Unexpected server error occurred.
      */
-    @PreAuthorize("@securityService.isOwnerOrAdmin(#id)")
+    @PreAuthorize("@securityService.isOwnerOrAdminByEmail(#email)")
     @GetMapping("/get/email")
     public ResponseEntity<UserResponseDto> getUserByEmail(@RequestParam String email) {
         UserResponseDto user = service.getUserByEmail(email);

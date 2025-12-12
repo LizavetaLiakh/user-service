@@ -67,7 +67,7 @@ public class CardInfoController {
      * @response 404 Not Found - Card not found.
      * @response 500 Internal Server Error - Unexpected server error occurred.
      */
-    @PreAuthorize("@securityService.isOwnerOrAdmin(#id)")
+    @PreAuthorize("@securityService.isCardOwnerOrAdmin(#id)")
     @GetMapping("/get/{id}")
     public ResponseEntity<CardInfoResponseDto> getCardById(@PathVariable Long id) {
         CardInfoResponseDto card = service.getCardById(id);
@@ -103,7 +103,7 @@ public class CardInfoController {
      * @response 404 Not Found - Card not found.
      * @response 500 Internal Server Error - Unexpected server error occurred.
      */
-    @PreAuthorize("@securityService.isOwnerOrAdmin(#id)")
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/update/{id}")
     public ResponseEntity<CardInfoResponseDto> updateCard(@PathVariable Long id,
                                                           @RequestBody CardInfoRequestDto cardInfoDto) {
@@ -120,7 +120,7 @@ public class CardInfoController {
      * @response 404 Not Found - Card not found.
      * @response 500 Internal Server Error - Unexpected server error occurred.
      */
-    @PreAuthorize("@securityService.isOwnerOrAdmin(#id)")
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteCard(@PathVariable Long id) {
         service.deleteCardById(id);

@@ -30,23 +30,23 @@ public class CardInfo {
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private User userId;
+    private User user;
 
     /**
      * The number of the card.
      */
-    @Column(name = "number")
+    @Column(name = "number", nullable = false, unique = true)
     private String number;
 
     /**
      * Full name of the card's holder.
      */
-    @Column(name = "holder")
+    @Column(name = "holder", nullable = false)
     private String holder;
 
     /**
      * The date when the card expires.
      */
-    @Column(name = "expiration_date")
+    @Column(name = "expiration_date", nullable = false)
     private LocalDate expirationDate;
 }
