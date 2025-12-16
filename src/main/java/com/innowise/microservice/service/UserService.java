@@ -9,6 +9,8 @@ import com.innowise.microservice.exception.UserNotFoundException;
 import com.innowise.microservice.exception.UserWithEmailNotFoundException;
 import com.innowise.microservice.mapper.UserMapper;
 import com.innowise.microservice.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -30,6 +32,7 @@ public class UserService {
 
     private final UserRepository repository;
     private final UserMapper mapper;
+    private static final Logger log = LoggerFactory.getLogger(UserService.class);
 
     public UserService(UserRepository repository, UserMapper mapper) {
         this.repository = repository;
@@ -48,6 +51,9 @@ public class UserService {
                     throw new UserEmailExistsException(userDto.getEmail());
                 });
         User user = mapper.toUser(userDto);
+        log.info("Creating user: name={}, surname={}, birth_date={}, email={}",
+                userDto.getName(), userDto.getSurname(), userDto.getBirthDate(), userDto.getEmail());
+
         User savedUser = repository.save(user);
         return mapper.toUserResponseDto(savedUser);
     }

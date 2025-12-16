@@ -25,8 +25,9 @@ public class SecurityConfig {
             throws Exception {
         return http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.POST, "/users/internal/add").permitAll()
                         .requestMatchers(HttpMethod.POST, "/users/add").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "users/get/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/users/get/**").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/users/update/**").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/users/delete/**").authenticated()
                         .anyRequest().authenticated()

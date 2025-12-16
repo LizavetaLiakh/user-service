@@ -59,6 +59,12 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
     }
 
+    @PostMapping("/internal/add")
+    public ResponseEntity<UserResponseDto> createUserInternal(@Valid @RequestBody UserRequestDto userDto) {
+        UserResponseDto user = service.createUser(userDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(user);
+    }
+
     /**
      * Finds a user by id.
      *
@@ -143,6 +149,12 @@ public class UserController {
     @PreAuthorize("@securityService.isOwnerOrAdmin(#id)")
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+        service.deleteUserById(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @DeleteMapping("/internal/delete/{id}")
+    public ResponseEntity<Void> internalDeleteUser(@PathVariable Long id) {
         service.deleteUserById(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
