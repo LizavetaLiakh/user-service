@@ -19,7 +19,7 @@ public class CardInfoResponseDto {
     /**
      * Unique identifier of the user from table "users".
      */
-    private User userId;
+    private Long userId;
 
     /**
      * The number of the card.

@@ -3,11 +3,14 @@ package com.innowise.microservice.service;
 import com.innowise.microservice.dto.CardInfoRequestDto;
 import com.innowise.microservice.dto.CardInfoResponseDto;
 import com.innowise.microservice.entity.CardInfo;
+import com.innowise.microservice.entity.User;
 import com.innowise.microservice.exception.CardNotFoundException;
 import com.innowise.microservice.exception.CardNumberExistsException;
 import com.innowise.microservice.exception.EmptyCardListException;
+import com.innowise.microservice.exception.UserNotFoundException;
 import com.innowise.microservice.mapper.CardInfoMapper;
 import com.innowise.microservice.repository.CardInfoRepository;
+import com.innowise.microservice.repository.UserRepository;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -29,10 +32,12 @@ public class CardInfoService {
 
     private final CardInfoRepository repository;
     private final CardInfoMapper mapper;
+    private final UserRepository userRepository;
 
-    public CardInfoService(CardInfoRepository repository, CardInfoMapper mapper) {
+    public CardInfoService(CardInfoRepository repository, CardInfoMapper mapper, UserRepository userRepository) {
         this.repository = repository;
         this.mapper = mapper;
+        this.userRepository = userRepository;
     }
 
     /**
@@ -46,6 +51,8 @@ public class CardInfoService {
                 .ifPresent(sameNumberCard -> {
                     throw new CardNumberExistsException(cardDto.getNumber());
                 });
+        User user = userRepository.findById(cardDto.getUserId())
+                .orElseThrow(() -> new UserNotFoundException(cardDto.getUserId()));
         CardInfo card = mapper.toCardInfo(cardDto);
         CardInfo savedCard = repository.save(card);
         return mapper.toCardInfoResponseDto(savedCard);
@@ -93,7 +100,7 @@ public class CardInfoService {
                         throw new CardNumberExistsException(newCardDto.getNumber());
                     }
                 });
-        int updated = repository.updateCardInfo(id, newCardDto.getUserId().getId(), newCardDto.getNumber(),
+        int updated = repository.updateCardInfo(id, newCardDto.getUserId(), newCardDto.getNumber(),
                 newCardDto.getHolder(), newCardDto.getExpirationDate());
         if (updated == 0) {
             throw new CardNotFoundException(id);

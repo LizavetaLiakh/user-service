@@ -35,7 +35,7 @@ public class CardInfoServiceIntegrationTest extends AbstractIntegrationTest {
         user = userRepository.save(user);
 
         CardInfoRequestDto cardInfoRequestDto = new CardInfoRequestDto();
-        cardInfoRequestDto.setUserId(user);
+        cardInfoRequestDto.setUserId(user.getId());
         cardInfoRequestDto.setNumber("1234123412341234");
         cardInfoRequestDto.setHolder("Hanna Montana");
         cardInfoRequestDto.setExpirationDate(LocalDate.of(2027, 11, 10));
@@ -43,14 +43,14 @@ public class CardInfoServiceIntegrationTest extends AbstractIntegrationTest {
         CardInfoResponseDto createdCard = service.createCard(cardInfoRequestDto);
 
         assertNotNull(createdCard);
-        assertEquals(user.getId(), createdCard.getUserId().getId());
+        assertEquals(user.getId(), createdCard.getUserId());
         assertEquals("1234123412341234", createdCard.getNumber());
         assertEquals("Hanna Montana", createdCard.getHolder());
         assertEquals(LocalDate.of(2027, 11, 10), createdCard.getExpirationDate());
 
         CardInfoResponseDto foundCard = service.getCardById(createdCard.getId());
 
-        assertEquals(createdCard.getUserId().getId(), foundCard.getUserId().getId());
+        assertEquals(createdCard.getUserId(), foundCard.getUserId());
         assertEquals(createdCard.getNumber(), foundCard.getNumber());
         assertEquals(createdCard.getHolder(), foundCard.getHolder());
         assertEquals(createdCard.getExpirationDate(), foundCard.getExpirationDate());
@@ -69,7 +69,7 @@ public class CardInfoServiceIntegrationTest extends AbstractIntegrationTest {
         user = userRepository.save(user);
 
         CardInfoRequestDto cardInfoRequestDto = new CardInfoRequestDto();
-        cardInfoRequestDto.setUserId(user);
+        cardInfoRequestDto.setUserId(user.getId());
         cardInfoRequestDto.setNumber("4444888844449999");
         cardInfoRequestDto.setHolder("Patrick Wong");
         cardInfoRequestDto.setExpirationDate(LocalDate.of(2027, 12, 9));
@@ -78,7 +78,7 @@ public class CardInfoServiceIntegrationTest extends AbstractIntegrationTest {
         assertNotNull(createdCard);
 
         CardInfoRequestDto updatedCard = new CardInfoRequestDto();
-        updatedCard.setUserId(user);
+        updatedCard.setUserId(user.getId());
         updatedCard.setNumber("4444888844448888");
         updatedCard.setHolder("Patrick Wang");
         updatedCard.setExpirationDate(LocalDate.of(2027, 12, 8));
@@ -87,7 +87,7 @@ public class CardInfoServiceIntegrationTest extends AbstractIntegrationTest {
 
         assertNotNull(updatedResponseCard);
         assertEquals(createdCard.getId(), updatedResponseCard.getId());
-        assertEquals(user.getId(), updatedResponseCard.getUserId().getId());
+        assertEquals(user.getId(), updatedResponseCard.getUserId());
         assertEquals("4444888844448888", updatedResponseCard.getNumber());
         assertEquals("Patrick Wang", updatedResponseCard.getHolder());
         assertEquals(LocalDate.of(2027, 12, 8), updatedResponseCard.getExpirationDate());
@@ -106,14 +106,14 @@ public class CardInfoServiceIntegrationTest extends AbstractIntegrationTest {
         user = userRepository.save(user);
 
         CardInfoRequestDto cardInfoRequestDto = new CardInfoRequestDto();
-        cardInfoRequestDto.setUserId(user);
+        cardInfoRequestDto.setUserId(user.getId());
         cardInfoRequestDto.setNumber("1111222233334444");
         cardInfoRequestDto.setHolder("Tom Young");
         cardInfoRequestDto.setExpirationDate(LocalDate.of(2027, 10, 1));
         service.createCard(cardInfoRequestDto);
 
         CardInfoRequestDto cardInfoRequestDto2 = new CardInfoRequestDto();
-        cardInfoRequestDto2.setUserId(user);
+        cardInfoRequestDto2.setUserId(user.getId());
         cardInfoRequestDto2.setNumber("1111222233334444");
         cardInfoRequestDto2.setHolder("Tom Young");
         cardInfoRequestDto2.setExpirationDate(LocalDate.of(2027, 10, 2));
@@ -128,7 +128,7 @@ public class CardInfoServiceIntegrationTest extends AbstractIntegrationTest {
         user = userRepository.save(user);
 
         CardInfoRequestDto cardInfoRequestDto = new CardInfoRequestDto();
-        cardInfoRequestDto.setUserId(user);
+        cardInfoRequestDto.setUserId(user.getId());
         cardInfoRequestDto.setNumber("5588100099994422");
         cardInfoRequestDto.setHolder("Mary Alice");
         cardInfoRequestDto.setExpirationDate(LocalDate.of(2028, 1, 11));

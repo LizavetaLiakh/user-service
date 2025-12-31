@@ -4,13 +4,62 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7945ea3d-b180-4377-95b7-9752b3f45802" name="Changes" comment="Create automatic DB schema via liquibase. Add Docker" />
+    <list default="true" id="7945ea3d-b180-4377-95b7-9752b3f45802" name="Changes" comment="Implement authentication using KeyCloak.">
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/innowise/microservice/authentication/JwtConverterConfig.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/innowise/microservice/authentication/JwtDecoderConfig.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/db/changelog/V1.1/20251211_initial_tables.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../api1/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../api1/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../api1/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/../api1/Dockerfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../api1/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../api1/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../api1/src/main/java/com/innowise/microservice/jwt/JwtAuthenticationFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/../api1/src/main/java/com/innowise/microservice/jwt/JwtAuthenticationFilter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../api1/src/main/java/com/innowise/microservice/jwt/JwtUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/../api1/src/main/java/com/innowise/microservice/jwt/JwtUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../api1/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/../api1/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../api1/target/api1-1.0.0.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../api1/target/classes/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/../api1/target/classes/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../api1/target/classes/com/innowise/microservice/jwt/JwtAuthenticationFilter.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../api1/target/classes/com/innowise/microservice/jwt/JwtUtils.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../api1/target/maven-archiver/pom.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../api1/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../api1/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/../api1/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../api1/target/maven-status/maven-compiler-plugin/testCompile/default-testCompile/createdFiles.lst" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../api1/target/maven-status/maven-compiler-plugin/testCompile/default-testCompile/inputFiles.lst" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/../docker-compose.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/innowise/microservice/authentication/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/innowise/microservice/authentication/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/innowise/microservice/authentication/SecurityService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/innowise/microservice/authentication/SecurityService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/innowise/microservice/controller/CardInfoController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/innowise/microservice/controller/CardInfoController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/innowise/microservice/controller/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/innowise/microservice/controller/UserController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/innowise/microservice/dto/CardInfoRequestDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/innowise/microservice/dto/CardInfoRequestDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/innowise/microservice/dto/CardInfoResponseDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/innowise/microservice/dto/CardInfoResponseDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/innowise/microservice/dto/UserRequestDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/innowise/microservice/dto/UserRequestDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/innowise/microservice/entity/CardInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/innowise/microservice/entity/CardInfo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/innowise/microservice/entity/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/innowise/microservice/entity/User.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/innowise/microservice/mapper/CardInfoMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/innowise/microservice/mapper/CardInfoMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/innowise/microservice/service/CardInfoService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/innowise/microservice/service/CardInfoService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/db/changelog/db.changelog-master.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/db/changelog/db.changelog-master.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/innowise/microservice/integration/CardInfoServiceIntegrationTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/innowise/microservice/integration/CardInfoServiceIntegrationTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/innowise/microservice/service/CardInfoServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/innowise/microservice/service/CardInfoServiceTest.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$/.." value="cipipeline" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
     <option name="ROOT_SYNC" value="DONT_SYNC" />
   </component>
@@ -22,8 +71,8 @@
 }</component>
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/LizavetaLiakh/user-service.git&quot;,
-    &quot;accountId&quot;: &quot;371604d5-19f7-4862-a2e5-b998f9bd86ae&quot;
+    &quot;url&quot;: &quot;https://github.com/LizavetaLiakh/user-service&quot;,
+    &quot;accountId&quot;: &quot;89bd8804-c349-4308-82d3-008d5d14a813&quot;
   }
 }</component>
   <component name="ProjectColorInfo">{
@@ -37,10 +86,10 @@
   "keyToString": {
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "main",
+    "git-widget-placeholder": "fixes",
     "ignore_missing_gitignore": "true",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "D:/innowise/microservice",
+    "last_opened_file_path": "D:/innowise/microservice/auth1",
     "settings.editor.selected.configurable": "org.jetbrains.plugins.github.ui.GithubSettingsConfigurable"
   }
 }]]></component>
@@ -67,7 +116,39 @@
       <option name="project" value="LOCAL" />
       <updated>1760820252442</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Change packages in usr1.">
+      <option name="closed" value="true" />
+      <created>1762351075122</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1762351075123</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Fix docker-compose.">
+      <option name="closed" value="true" />
+      <created>1762519212888</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1762519212889</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Fix authentication part.">
+      <option name="closed" value="true" />
+      <created>1762530383194</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1762530383194</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Implement authentication using KeyCloak.">
+      <option name="closed" value="true" />
+      <created>1762556642185</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1762556642188</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="UnknownFeatures">
@@ -88,6 +169,10 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Create automatic DB schema via liquibase. Add Docker" />
-    <option name="LAST_COMMIT_MESSAGE" value="Create automatic DB schema via liquibase. Add Docker" />
+    <MESSAGE value="Change packages in usr1." />
+    <MESSAGE value="Fix docker-compose." />
+    <MESSAGE value="Fix authentication part." />
+    <MESSAGE value="Implement authentication using KeyCloak." />
+    <option name="LAST_COMMIT_MESSAGE" value="Implement authentication using KeyCloak." />
   </component>
 </project>

@@ -28,24 +28,24 @@ public class User {
     /**
      * Name of the user.
      */
-    @Column(name = "name")
+    @Column(nullable = false)
     private String name;
 
     /**
      * Surname of the user.
      */
-    @Column(name = "surname")
+    @Column(nullable = false)
     private String surname;
 
     /**
      * The date when the user was born.
      */
-    @Column(name = "birth_date")
+    @Column(name = "birth_date", nullable = false)
     private LocalDate birthDate;
 
     /**
      * Email of the user.
      */
-    @Column(name = "email")
+    @Column(nullable = false, unique = true)
     private String email;
 }
